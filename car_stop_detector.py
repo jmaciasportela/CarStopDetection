@@ -184,10 +184,18 @@ parts = 80
 frames_to_stop = 30
 
 ########################################################################################################################
+fourcc = cv2.VideoWriter_fourcc(*"XVID")
+result = cv2.VideoWriter('output.avi', 
+                         0,
+                         10, (227, 128))
 
 while True:
     frame_number += 1
     success_capture, frame = vs.read()
+    # fshape = frame.shape
+    # fheight = fshape[0]
+    # fwidth = fshape[1]
+    # print('fwidth , fheight ',fwidth , fheight)
     if not success_capture:
         print("=============================================")
         print("ERROR! VIDEO NOT FOUND")
@@ -413,7 +421,13 @@ while True:
     draw_centroids(frame, trucks, truck_trackableObjects, long_stopped_trucks)
 
     # show the frame
-    cv2.imshow("Frame", frame)
+    # cv2.imshow("Frame", frame)
+    result.write(frame)
+    cv2.imwrite("output/%d.jpg" % totalFrames, frame)
+
+
+    # out = cv2.VideoWriter('output.avi',-1, 20.0, (fwidth,fheight))
+
     key = cv2.waitKey(1) & 0xFF
 
     # press "q" to stop working
@@ -425,6 +439,8 @@ while True:
     totalFrames += 1
 
 # close everything
+vs.release()
+result.release()
 cv2.destroyAllWindows()
 
 # Thanks for using my code, bud ;)
