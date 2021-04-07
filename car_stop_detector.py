@@ -12,6 +12,7 @@ import dlib
 import cv2
 import time
 import math as maths
+import os
 
 # command line argument parser
 ap = argparse.ArgumentParser()
@@ -113,11 +114,22 @@ def find_stopped_cars(counting_frames, frames_to_stop):
 
 # YOLOv3 configuration
 print("[INFO] loading model...")
-net = cv2.dnn.readNet(args["yolo"] + "/yolov3_608.weights", args["yolo"] + "/yolov3_608.cfg")
-print("[INFO] path to weights: ", args["yolo"] + "/yolov3_608.weights")
-print("[INFO] path to cfg: ", args["yolo"] + "/yolov3_608.cfg")
+
+fn=os.listdir(args["yolo"])
+wf=[x for x in fn if 'weights' in x ][0]
+cf=[x for x in fn if 'cfg' in x][0]
+nf=[x for x in fn if 'names' in x][0]
+
+# print("weights file ...", wf)
+# print("cfg file ...", cf)
+
+net = cv2.dnn.readNet(args["yolo"] + "/" + wf, args["yolo"] + "/" + cf)
+
+print("[INFO] path to weights: ", args["yolo"] + "/" + wf)
+print("[INFO] path to cfg: ", args["yolo"] + "/" + cf)
+print("[INFO] path to names: ", args["yolo"] + "/" + nf)
 # классы объектов, которые могут быть распознаны алгоритмом
-with open(args["yolo"] + "/yolov3_608.names", 'r') as f:
+with open(args["yolo"] + "/" + nf, 'r') as f:
     CLASSES = [line.strip() for line in f.readlines()]
 
 layer_names = net.getLayerNames()
@@ -184,10 +196,10 @@ parts = 80
 frames_to_stop = 30
 
 ########################################################################################################################
-fourcc = cv2.VideoWriter_fourcc(*"XVID")
-result = cv2.VideoWriter('output.avi', 
-                         0,
-                         10, (227, 128))
+fourcc = cv2.VideoWriter_fourcc(*"MJPG")
+result = cv2.VideoWriter('output1.mjpg', 
+                         fourcc,
+                         10, (640, 480))
 
 while True:
     frame_number += 1
@@ -421,9 +433,11 @@ while True:
     draw_centroids(frame, trucks, truck_trackableObjects, long_stopped_trucks)
 
     # show the frame
-    # cv2.imshow("Frame", frame)
     result.write(frame)
     cv2.imwrite("output/%d.jpg" % totalFrames, frame)
+
+    frame = cv2.resize(frame, (640, 480), cv2.INTER_LANCZOS4)
+    cv2.imshow("Frame", frame)
 
 
     # out = cv2.VideoWriter('output.avi',-1, 20.0, (fwidth,fheight))
@@ -439,8 +453,8 @@ while True:
     totalFrames += 1
 
 # close everything
+cv2.destroyAllWindows()
 vs.release()
 result.release()
-cv2.destroyAllWindows()
 
 # Thanks for using my code, bud ;)
