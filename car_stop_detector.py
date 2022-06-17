@@ -133,7 +133,7 @@ with open(args["yolo"] + "/" + nf, 'r') as f:
     CLASSES = [line.strip() for line in f.readlines()]
 
 layer_names = net.getLayerNames()
-output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 
 # NN input image size
 inpWidth = 608
@@ -196,8 +196,8 @@ parts = 80
 frames_to_stop = 30
 
 ########################################################################################################################
-fourcc = cv2.VideoWriter_fourcc(*"MJPG")
-result = cv2.VideoWriter('output1.mjpg', 
+fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+result = cv2.VideoWriter('output.mp4', 
                          fourcc,
                          10, (640, 480))
 
@@ -434,20 +434,20 @@ while True:
 
     # show the frame
     result.write(frame)
-    cv2.imwrite("output/%d.jpg" % totalFrames, frame)
+    cv2.imwrite("/tmp/output_%d.jpg" % totalFrames, frame)
 
     frame = cv2.resize(frame, (640, 480), cv2.INTER_LANCZOS4)
-    cv2.imshow("Frame", frame)
+    #cv2.imshow("Frame", frame)
 
 
     # out = cv2.VideoWriter('output.avi',-1, 20.0, (fwidth,fheight))
 
-    key = cv2.waitKey(1) & 0xFF
+    #key = cv2.waitKey(1) & 0xFF
 
     # press "q" to stop working
-    if key == ord("q"):
-        print("[INFO] process finished by user")
-        break
+    #if key == ord("q"):
+    #    print("[INFO] process finished by user")
+    #    break
 
     # increase frame number
     totalFrames += 1
