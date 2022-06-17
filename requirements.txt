@@ -3,4 +3,4 @@ scipy
 numpy
 imutils
 dlib
-opencv-python
+opencv-python-headless
